@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  CardActionArea,
-} from "@mui/material";
+import { Container, Typography, CircularProgress } from "@mui/material";
 import PostCard from "../component/PostCard";
 
 function Post() {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,11 +14,16 @@ function Post() {
   }, []);
 
   const fetchPosts = async () => {
-    const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/posts`
-    );
-    console.log("response", response.data);
-    setPosts(response.data);
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/posts`
+      );
+      setPosts(response.data);
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+    }
+    setLoading(false);
   };
 
   const handlePostClick = (post) => {
@@ -31,19 +31,30 @@ function Post() {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Typography variant="h2" component="h1" gutterBottom>
-        Blog Posts
-      </Typography>
-      {posts.length > 0 &&
-        posts.map((post) => (
-          <PostCard
-            key={post._id}
-            data={post}
-            onClick={() => handlePostClick(post)}
+    <div>
+      <Container maxWidth="md">
+        <Typography variant="h2" component="h1" gutterBottom color="primary">
+          Check Latest Blogs
+        </Typography>
+        {loading ? (
+          <CircularProgress
+            color="secondary"
+            size={100}
+            style={{ display: "block", margin: "auto" }}
           />
-        ))}
-    </Container>
+        ) : posts.length > 0 ? (
+          posts.map((post) => (
+            <PostCard
+              key={post._id}
+              data={post}
+              onClick={() => handlePostClick(post)}
+            />
+          ))
+        ) : (
+          <Typography variant="body1">No posts found.</Typography>
+        )}
+      </Container>
+    </div>
   );
 }
 

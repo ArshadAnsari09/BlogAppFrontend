@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Container,
   Typography,
   Card,
   CardContent,
@@ -9,7 +8,6 @@ import {
 } from "@mui/material";
 
 const PostCard = (props) => {
-  console.log(props.data, "props.data");
   const theme = useTheme();
   const date = new Date(props.data.date);
 
